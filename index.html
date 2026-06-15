@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TG EAPCET College Predictor | Premium AI Dashboard</title>
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND LAYER -->
+  <div class="background-canvas">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="aurora aurora-3"></div>
+  </div>
+
+  <!-- MAIN WRAPPER -->
+  <div class="app-layout">
+    
+    <!-- NAVIGATION BAR -->
+    <header>
+      <div class="logo-section">
+        <div class="logo-orb"></div>
+        <span class="logo-text">AURA.PREDICT</span>
+      </div>
+      <div class="server-status">
+        <div class="status-dot"></div>
+        <span>AI Prediction Core Active</span>
+      </div>
+    </header>
+
+    <!-- HERO HEADER -->
+    <section class="hero">
+      <div class="hero-badge-wrap">
+        <div class="hero-badge"><i data-lucide="graduation-cap"></i> 160+ Colleges</div>
+        <div class="hero-badge"><i data-lucide="database"></i> Real Counselling Data</div>
+        <div class="hero-badge"><i data-lucide="sparkles"></i> Accurate Predictions</div>
+      </div>
+      <h1>Find Your Dream Engineering College</h1>
+      <p>TG EAPCET analytics platform engine. Formulate admission probability based on multi-phase counselling trends.</p>
+    </section>
+
+    <!-- MAIN INPUT PANEL -->
+    <main class="predictor-card">
+      
+      <!-- SECTION 1: BRANCH CHIPS -->
+      <div class="input-section">
+        <div class="section-title-wrap">
+          <div class="section-num">1</div>
+          <span class="section-label">Select Target Branches</span>
+          <span style="font-size: 0.72rem; color: var(--muted); margin-left: auto;">Multiple Selection Enabled</span>
+        </div>
+        <div class="branch-grid" id="branchGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- SECTION 2: CASTE & GENDER DUAL CONTROL -->
+      <div class="input-section">
+        <div class="caste-gender-row">
+          <div>
+            <div class="section-title-wrap">
+              <div class="section-num">2</div>
+              <span class="section-label">Caste Category</span>
+            </div>
+            <div class="segmented-control" id="casteControl">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <div>
+            <div class="section-title-wrap">
+              <div class="section-num">3</div>
+              <span class="section-label">Gender Pool</span>
+            </div>
+            <div class="segmented-control" id="genderControl">
+              <button class="segment-btn selected" onclick="selectGender('BOYS')">General/Boys</button>
+              <button class="segment-btn" onclick="selectGender('GIRLS')">Girls-Only</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: RANK INPUT -->
+      <div class="input-section">
+        <div class="section-title-wrap">
+          <div class="section-num">4</div>
+          <span class="section-label">Enter EAPCET Rank</span>
+          <span style="font-size: 0.72rem; color: var(--muted); margin-left: auto;">Optional for Cutoff Database Browser</span>
+        </div>
+        <div class="rank-layout">
+          <div class="glass-input-box">
+            <i data-lucide="hash"></i>
+            <input type="number" id="rankInput" placeholder="e.g. 15400" min="1" max="250000" oninput="onRankChange()">
+          </div>
+          <div class="rank-preview">
+            <span class="rank-preview-label">Predictor Focus Rank</span>
+            <span class="rank-preview-val" id="rankPreviewVal">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RUN PREDICTIONS BUTTON -->
+      <button class="predict-btn" id="predictBtn" onclick="runPrediction()">
+        <i data-lucide="cpu" id="btnIcon"></i>
+        <span id="btnText">Predict Matching Colleges</span>
+      </button>
+
+    </main>
+
+    <!-- MOBILE FLOATING CTA -->
+    <div class="mobile-sticky-cta">
+      <button class="predict-btn" onclick="runPrediction()">
+        <i data-lucide="cpu"></i>
+        <span>Run Predictions</span>
+      </button>
+    </div>
+
+    <!-- RESULTS DISPLAY GRID -->
+    <section class="results-container" id="resultsSection">
+      
+      <!-- SUMMARY & FILTER BOARD -->
+      <div class="results-header-panel">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 id="resultsTitle">Prediction Analytics Output</h2>
+            <p id="resultsSubtitle">Loading forecasts...</p>
+          </div>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs">
+          <button class="tab-btn active" data-band="all" onclick="filterResults('all')">
+            <span>All Matches</span>
+            <span class="tab-badge" id="badge-all">0</span>
+          </button>
+          <button class="tab-btn" data-band="safe" onclick="filterResults('safe')">
+            <span style="color: var(--safe);">Safe</span>
+            <span class="tab-badge" id="badge-safe">0</span>
+          </button>
+          <button class="tab-btn" data-band="moderate" onclick="filterResults('moderate')">
+            <span style="color: var(--moderate);">Moderate</span>
+            <span class="tab-badge" id="badge-moderate">0</span>
+          </button>
+          <button class="tab-btn" data-band="risky" onclick="filterResults('risky')">
+            <span style="color: var(--risky);">Risky</span>
+            <span class="tab-badge" id="badge-risky">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC CARDS LIST -->
+      <div class="college-list" id="collegeList">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- RESET BUTTON -->
+      <div class="reset-row">
+        <button class="btn-glass-reset" onclick="resetApp()">
+          <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
+          <span>Clear and Reset System</span>
+        </button>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const BRANCHES = [
+      {id:'CSE',    label:'CSE',            icon:'💻'},
+      {id:'CSE-AI', label:'CSE (AI & ML)',  icon:'🤖'},
+      {id:'CSE-DS', label:'CSE (Data Sci)', icon:'📊'},
+      {id:'CSE-CS', label:'Cyber Security', icon:'🔒'},
+      {id:'IT',     label:'IT',             icon:'🌐'},
+      {id:'ECE',    label:'ECE',            icon:'📡'},
+      {id:'EEE',    label:'EEE',            icon:'⚡'},
+      {id:'MECH',   label:'Mechanical',     icon:'⚙️'},
+      {id:'CIVIL',  label:'Civil',          icon:'🏗️'},
+      {id:'CHEM',   label:'Chemical',       icon:'🧪'},
+    ];
+
+    const CASTES = [
+      {id:'OC',     label:'OC'},
+      {id:'BC_A',   label:'BC-A'},
+      {id:'BC_B',   label:'BC-B'},
+      {id:'BC_C',   label:'BC-C'},
+      {id:'BC_D',   label:'BC-D'},
+      {id:'BC_E',   label:'BC-E'},
+      {id:'SC_I',   label:'SC-I'},
+      {id:'SC_II',  label:'SC-II'},
+      {id:'SC_III', label:'SC-III'},
+      {id:'ST',     label:'ST'},
+      {id:'EWS',    label:'EWS'},
+    ];
+
+    // STATE CONTROLLERS
+    let selectedBranches = ['CSE']; // default selected
+    let selectedCaste = 'OC';
+    let selectedGender = 'BOYS';
+    let rawColleges = [];
+    let currentFilter = 'all';
+
+    // RENDER UI
+    function init() {
+      // 1. Render Branch chips
+      const bg = document.getElementById('branchGrid');
+      bg.innerHTML = BRANCHES.map(b => {
+        const isSelected = selectedBranches.includes(b.id);
+        const indexBadge = isSelected ? `<span class="chip-order">${selectedBranches.indexOf(b.id) + 1}</span>` : '';
+        return `
+          <div class="branch-chip ${isSelected ? 'selected' : ''}" id="bc-${b.id}" onclick="toggleBranch('${b.id}')">
+            <span>${b.icon}</span>
+            <span>${b.label}</span>
+            ${indexBadge}
+          </div>
+        `;
+      }).join('');
+
+      // 2. Render Caste Segment Buttons
+      const cg = document.getElementById('casteControl');
+      cg.innerHTML = CASTES.map(c => `
+        <button class="segment-btn ${c.id === selectedCaste ? 'selected' : ''}" id="sc-${c.id}" onclick="selectCaste('${c.id}')">
+          ${c.label}
+        </button>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // STATE HANDLERS
+    function toggleBranch(id) {
+      const idx = selectedBranches.indexOf(id);
+      if (idx > -1) {
+        // remove
+        selectedBranches.splice(idx, 1);
+      } else {
+        // add
+        selectedBranches.push(id);
+      }
+      init();
+    }
+
+    function selectCaste(id) {
+      selectedCaste = id;
+      init();
+    }
+
+    function selectGender(gender) {
+      selectedGender = gender;
+      const gcButtons = document.getElementById('genderControl').querySelectorAll('.segment-btn');
+      gcButtons.forEach(b => {
+        b.classList.remove('selected');
+        if (b.getAttribute('onclick').includes(gender)) {
+          b.classList.add('selected');
+        }
+      });
+    }
+
+    function onRankChange() {
+      const val = document.getElementById('rankInput').value;
+      const preview = document.getElementById('rankPreviewVal');
+      if (val) {
+        preview.textContent = '#' + Number(val).toLocaleString('en-IN');
+      } else {
+        preview.textContent = '--';
+      }
+    }
+
+    // GENERATE INTERACTIVE SVG CHART FOR EACH CARD
+    function generateChart(history, predicted) {
+      const p1 = history.phase1;
+      const p2 = history.phase2;
+      const p3 = history.phase3;
+      
+      const values = [p1, p2, p3].filter(v => v !== null && v !== undefined);
+      if (values.length === 0) {
+        return '<div style="color: var(--muted); font-size: 0.75rem; text-align: center; margin-top: 50px;">Insufficient historical data to render trends.</div>';
+      }
+      
+      const minVal = Math.min(...values, predicted) * 0.92;
+      const maxVal = Math.max(...values, predicted) * 1.08;
+      const range = maxVal - minVal;
+      
+      const getX = (idx) => 40 + idx * 80;
+      const getY = (val) => {
+        if (range === 0) return 80;
+        return 140 - ((val - minVal) / range) * 100;
+      };
+      
+      const points = [];
+      if (p1) points.push({ x: getX(0), y: getY(p1), val: p1, label: 'Phase 1' });
+      if (p2) points.push({ x: getX(1), y: getY(p2), val: p2, label: 'Phase 2' });
+      if (p3) points.push({ x: getX(2), y: getY(p3), val: p3, label: 'Phase 3' });
+      points.push({ x: getX(3), y: getY(predicted), val: predicted, label: 'Predicted', isPred: true });
+      
+      let pathD = '';
+      points.forEach((p, i) => {
+        if (i === 0) pathD += `M ${p.x} ${p.y}`;
+        else pathD += ` L ${p.x} ${p.y}`;
+      });
+      
+      const pointsHTML = points.map(p => `
+        <circle cx="${p.x}" cy="${p.y}" r="${p.isPred ? 6 : 4}" 
+                style="fill: ${p.isPred ? 'var(--moderate)' : 'var(--accent2)'}; stroke: #fff; stroke-width: 1.5; cursor: pointer;">
+        </circle>
+        <text x="${p.x}" y="${p.y - 12}" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">
+          ${p.val.toLocaleString('en-IN')}
+        </text>
+        <text x="${p.x}" y="155" fill="var(--muted)" font-size="8.5" font-weight="500" text-anchor="middle">
+          ${p.label}
+        </text>
+      `).join('');
+      
+      return `
+        <svg class="svg-chart" viewBox="0 0 320 170" style="width: 100%; height: 100%;">
+          <!-- Horizontal Grid Lines -->
+          <line x1="20" y1="40" x2="300" y2="40" stroke="rgba(255,255,255,0.03)" stroke-dasharray="2"/>
+          <line x1="20" y1="90" x2="300" y2="90" stroke="rgba(255,255,255,0.03)" stroke-dasharray="2"/>
+          <line x1="20" y1="140" x2="300" y2="140" stroke="rgba(255,255,255,0.03)" stroke-dasharray="2"/>
+          
+          <!-- Path Line -->
+          <path d="${pathD}" fill="none" stroke="url(#chartGrad)" stroke-width="3" stroke-linecap="round"/>
+          
+          <!-- Definitions -->
+          <defs>
+            <linearGradient id="chartGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="var(--accent2)" />
+              <stop offset="60%" stop-color="var(--accent)" />
+              <stop offset="100%" stop-color="var(--moderate)" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Nodes and Values -->
+          ${pointsHTML}
+        </svg>
+      `;
+    }
+
+    // RUN API PREDICTIONS
+    async function runPrediction() {
+      const rankInput = document.getElementById('rankInput').value;
+      const rankVal = rankInput ? parseInt(rankInput) : null;
+      
+      // Category construction (e.g. OC + BOYS -> OC_BOYS)
+      const casteValue = `${selectedCaste}_${selectedGender}`;
+      
+      const payload = {
+        branches: selectedBranches,
+        caste: casteValue,
+        rank: rankVal
+      };
+      
+      // Start Loading state
+      const btn = document.getElementById('predictBtn');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      
+      btnIcon.outerHTML = '<div class="spinner-orb" id="btnIcon"></div>';
+      btnText.textContent = 'Aggregating Trends & Simulating Admissions...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/colleges', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        
+        rawColleges = data.colleges || [];
+        
+        // Update labels
+        document.getElementById('resultsTitle').textContent = data.title;
+        document.getElementById('resultsSubtitle').textContent = data.subtitle;
+        
+        // Render colleges and update counts
+        updateBadgesCount();
+        filterResults('all');
+        
+        document.getElementById('resultsSection').classList.add('visible');
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+      } catch (err) {
+        console.error(err);
+        alert('Could not establish contact with core prediction API. Please make sure the backend is active.');
+      } finally {
+        // Stop Loading
+        const spinner = document.getElementById('btnIcon');
+        spinner.outerHTML = '<i data-lucide="cpu" id="btnIcon"></i>';
+        document.getElementById('btnText').textContent = 'Predict Matching Colleges';
+        document.getElementById('predictBtn').disabled = false;
+        lucide.createIcons();
+      }
+    }
+
+    // CARD COLLAPSIBLE BEHAVIOR
+    function toggleCard(cardId) {
+      const card = document.getElementById(cardId);
+      const isExpanded = card.classList.contains('expanded');
+      
+      // collapse all first
+      document.querySelectorAll('.college-card').forEach(c => {
+        c.classList.remove('expanded');
+        c.querySelector('.college-card-expanded-panel').style.maxHeight = null;
+      });
+      
+      if (!isExpanded) {
+        card.classList.add('expanded');
+        const panel = card.querySelector('.college-card-expanded-panel');
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    }
+
+    // UPDATE FILTER PILLS
+    function updateBadgesCount() {
+      const allCount = rawColleges.length;
+      const safeCount = rawColleges.filter(r => r.band === 'SAFE').length;
+      const modCount = rawColleges.filter(r => r.band === 'MODERATE').length;
+      const riskyCount = rawColleges.filter(r => r.band === 'RISKY').length;
+      
+      document.getElementById('badge-all').textContent = allCount;
+      document.getElementById('badge-safe').textContent = safeCount;
+      document.getElementById('badge-moderate').textContent = modCount;
+      document.getElementById('badge-risky').textContent = riskyCount;
+    }
+
+    // FILTER RESULTS
+    function filterResults(band) {
+      currentFilter = band;
+      
+      // Update Tab CSS
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        if (t.getAttribute('data-band') === band) {
+          t.classList.add('active');
+        }
+      });
+      
+      const filtered = band === 'all' ? rawColleges : rawColleges.filter(r => r.band.toLowerCase() === band);
+      
+      const listElement = document.getElementById('collegeList');
+      if (filtered.length === 0) {
+        listElement.innerHTML = `
+          <div class="no-colleges-card">
+            <i data-lucide="alert-circle"></i>
+            <h3>No Colleges Found</h3>
+            <p>We found no matching colleges under the "${band.toUpperCase()}" index. Check other categories or broaden branch priority settings.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+      
+      listElement.innerHTML = filtered.map((r, index) => {
+        const uniqueId = `col-card-${index}`;
+        const matchScore = Math.round(r.score);
+        
+        // Progress SVG Calculations
+        const strokeDash = Math.round(2 * Math.PI * 20); // 126 max dash offset
+        const percentage = r.admission_probability;
+        const dashOffset = Math.round(strokeDash - (percentage / 100) * strokeDash);
+        
+        // Chart SVG injection
+        const chartSVG = generateChart(r.history, r.predicted_cutoff);
+        
+        return `
+          <div class="college-card" id="${uniqueId}">
+            <!-- Main visible row -->
+            <div class="college-card-main" onclick="toggleCard('${uniqueId}')">
+              
+              <!-- Left: Name and labels -->
+              <div class="col-details">
+                <div class="col-top-meta">
+                  <span class="col-code-badge">${r.college_code}</span>
+                  <span class="col-type-tag">${r.type}</span>
+                </div>
+                <div class="col-name-label">${r.name}</div>
+                <div class="col-sub-meta">
+                  <span><i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> ${r.city}</span>
+                  <span><i data-lucide="book-open" style="width: 14px; height: 14px;"></i> ${r.branch_label} (${r.branch})</span>
+                </div>
+              </div>
+
+              <!-- Mid: Cutoff values -->
+              <div class="col-cutoff-box">
+                <span class="col-cutoff-num">${r.predicted_cutoff.toLocaleString('en-IN')}</span>
+                <span class="col-cutoff-lbl">Predicted Cutoff</span>
+              </div>
+
+              <!-- Mid: Probability rings -->
+              <div class="col-probability-box">
+                <div class="progress-ring-container" data-band="${r.band}">
+                  <svg class="progress-ring" width="46" height="46">
+                    <circle class="progress-ring-circle-bg" cx="23" cy="23" r="20" />
+                    <circle class="progress-ring-circle" cx="23" cy="23" r="20" stroke-dasharray="${strokeDash}" stroke-dashoffset="${dashOffset}"/>
+                  </svg>
+                  <div class="progress-percentage">${percentage}%</div>
+                </div>
+                <div class="col-cutoff-box">
+                  <span class="col-cutoff-lbl">Chance</span>
+                </div>
+              </div>
+
+              <!-- Right: Match and expand tag -->
+              <div class="col-indicators">
+                <div class="match-tag" data-band="${r.band}">
+                  <i data-lucide="${r.band === 'SAFE' ? 'check-circle' : r.band === 'MODERATE' ? 'help-circle' : 'x-circle'}" style="width: 14px; height: 14px;"></i>
+                  <span>${r.band}</span>
+                </div>
+                <i data-lucide="chevron-down" class="expand-arrow"></i>
+              </div>
+
+            </div>
+
+            <!-- Expanding Collapsible Panel -->
+            <div class="college-card-expanded-panel">
+              <div class="panel-content">
+                
+                <!-- Expanded: Chart display -->
+                <div class="panel-chart-side">
+                  <span class="chart-title">Cutoff Progression & Forecast</span>
+                  <div class="chart-container">
+                    ${chartSVG}
+                  </div>
+                </div>
+
+                <!-- Expanded: Analytics Details -->
+                <div class="panel-metrics-side">
+                  <div>
+                    <span class="chart-title">Detailed Admissions Metrics</span>
+                    <div class="metrics-grid" style="margin-top: 8px;">
+                      <div class="metric-card">
+                        <span class="metric-card-lbl">Aura Match Index</span>
+                        <div class="metric-card-val" style="color: var(--accent2);">
+                          <i data-lucide="activity" style="width: 14px; height: 14px;"></i>
+                          <span>${matchScore}/100</span>
+                        </div>
+                      </div>
+                      <div class="metric-card">
+                        <span class="metric-card-lbl">Confidence Score</span>
+                        <div class="metric-card-val" style="color: var(--moderate);">
+                          <i data-lucide="shield" style="width: 14px; height: 14px;"></i>
+                          <span>${r.confidence_score}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Historical phase details table -->
+                  <div>
+                    <table class="phase-history-table">
+                      <thead>
+                        <tr>
+                          <th>PHASE 1</th>
+                          <th>PHASE 2</th>
+                          <th>PHASE 3</th>
+                          <th>FORECAST</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>${r.history.phase1 ? r.history.phase1.toLocaleString('en-IN') : '--'}</td>
+                          <td>${r.history.phase2 ? r.history.phase2.toLocaleString('en-IN') : '--'}</td>
+                          <td>${r.history.phase3 ? r.history.phase3.toLocaleString('en-IN') : '--'}</td>
+                          <td style="color: var(--moderate);">${r.predicted_cutoff.toLocaleString('en-IN')}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      lucide.createIcons();
+    }
+
+    // SYSTEM RESET
+    function resetApp() {
+      selectedBranches = ['CSE'];
+      selectedCaste = 'OC';
+      selectedGender = 'BOYS';
+      document.getElementById('rankInput').value = '';
+      document.getElementById('rankPreviewVal').textContent = '--';
+      document.getElementById('resultsSection').classList.remove('visible');
+      rawColleges = [];
+      init();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // STARTUP ENTRY
+    init();
+  </script>
+</body>
+</html>

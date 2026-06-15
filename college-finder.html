@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TG College Finder</title>
+<style>
+:root {
+  --bg:      #0a0e1a;
+  --surface: #111827;
+  --card:    #161d2e;
+  --border:  #1e2d45;
+  --accent:  #3b82f6;
+  --accent2: #6366f1;
+  --gold:    #f59e0b;
+  --green:   #10b981;
+  --red:     #ef4444;
+  --text:    #e2e8f0;
+  --muted:   #64748b;
+  --label:   #94a3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── BACKGROUND GRID ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── HEADER ── */
+.header{
+  position:relative;z-index:2;
+  padding:48px 24px 40px;
+  text-align:center;
+  background:linear-gradient(180deg, rgba(59,130,246,0.08) 0%, transparent 100%);
+  border-bottom:1px solid var(--border);
+}
+.header-badge{
+  display:inline-block;
+  background:rgba(59,130,246,0.12);
+  border:1px solid rgba(59,130,246,0.3);
+  color:var(--accent);
+  font-size:0.72rem;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:5px 16px;border-radius:20px;
+  margin-bottom:16px;
+}
+.header h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2rem,5vw,3.4rem);
+  font-weight:800;
+  background:linear-gradient(135deg,#e2e8f0 30%,#3b82f6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.1;
+}
+.header p{
+  color:var(--muted);font-size:0.95rem;margin-top:10px;font-weight:300;
+}
+
+/* ── LAYOUT ── */
+.page{
+  position:relative;z-index:1;
+  max-width:860px;margin:0 auto;
+  padding:40px 24px 80px;
+  display:flex;flex-direction:column;gap:32px;
+}
+
+/* ── SECTION CARD ── */
+.section-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  animation:fadeUp 0.5s ease both;
+}
+.section-card:nth-child(1){animation-delay:0.05s;}
+.section-card:nth-child(2){animation-delay:0.12s;}
+.section-card:nth-child(3){animation-delay:0.19s;}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.section-head{
+  padding:18px 24px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,0.02);
+}
+.section-num{
+  width:32px;height:32px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.section-title{
+  font-family:'Syne',sans-serif;
+  font-size:1rem;font-weight:700;color:var(--text);
+}
+.section-subtitle{font-size:0.78rem;color:var(--muted);margin-top:1px;}
+.section-body{padding:22px 24px;}
+
+/* ── OPTIONAL BADGE ── */
+.optional-badge{
+  margin-left:auto;
+  background:rgba(245,158,11,0.1);
+  border:1px solid rgba(245,158,11,0.25);
+  color:var(--gold);
+  font-size:0.68rem;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:3px 10px;border-radius:10px;
+}
+.default-badge{
+  margin-left:auto;
+  background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.25);
+  color:var(--green);
+  font-size:0.68rem;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:3px 10px;border-radius:10px;
+}
+
+/* ── BRANCH BUTTONS ── */
+.branch-grid{
+  display:flex;flex-wrap:wrap;gap:10px;
+}
+.branch-btn{
+  position:relative;
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  color:var(--label);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:0.87rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.18s;
+  user-select:none;
+}
+.branch-btn:hover{
+  border-color:var(--accent);color:var(--text);
+  background:rgba(59,130,246,0.06);
+}
+.branch-btn.selected{
+  border-color:var(--accent);
+  background:rgba(59,130,246,0.12);
+  color:#fff;
+}
+.branch-btn .rank-dot{
+  width:20px;height:20px;
+  background:var(--accent);
+  border-radius:6px;
+  font-size:0.72rem;font-weight:700;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  animation:popIn 0.18s ease;
+}
+@keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+.branch-btn .branch-icon{font-size:1rem;}
+.branch-order-hint{
+  font-size:0.75rem;color:var(--muted);margin-top:14px;
+  display:flex;align-items:center;gap:6px;
+}
+.branch-order-hint::before{
+  content:'';display:inline-block;
+  width:16px;height:1px;background:var(--muted);
+}
+
+/* ── SELECTED BRANCH PILLS ── */
+.selected-branches{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;min-height:32px;
+}
+.sel-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(59,130,246,0.12);
+  border:1px solid rgba(59,130,246,0.3);
+  color:var(--accent);
+  padding:5px 12px 5px 8px;
+  border-radius:20px;font-size:0.8rem;font-weight:500;
+  animation:slideIn 0.15s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:scale(0.85);}to{opacity:1;transform:scale(1);}}
+.sel-pill .pill-num{
+  width:18px;height:18px;
+  background:var(--accent);color:#fff;
+  border-radius:50%;
+  font-size:0.7rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.sel-pill .pill-x{
+  cursor:pointer;opacity:0.6;font-size:0.85rem;
+  transition:opacity 0.1s;margin-left:2px;
+}
+.sel-pill .pill-x:hover{opacity:1;color:var(--red);}
+
+/* ── CASTE BUTTONS ── */
+.caste-grid{display:flex;flex-wrap:wrap;gap:10px;}
+.caste-btn{
+  padding:10px 22px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  color:var(--label);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:0.87rem;font-weight:500;
+  cursor:pointer;
+  transition:all 0.18s;
+  user-select:none;
+}
+.caste-btn:hover{border-color:#a855f7;color:var(--text);background:rgba(168,85,247,0.06);}
+.caste-btn.selected{
+  border-color:#a855f7;
+  background:rgba(168,85,247,0.14);
+  color:#fff;
+}
+.caste-note{font-size:0.75rem;color:var(--muted);margin-top:12px;}
+
+/* ── RANK INPUT ── */
+.rank-wrap{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.rank-input-box{
+  flex:1;min-width:180px;
+  position:relative;
+}
+.rank-input-box input{
+  width:100%;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:12px 18px;
+  color:var(--text);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:1rem;font-weight:500;
+  outline:none;
+  transition:border-color 0.18s;
+}
+.rank-input-box input:focus{border-color:var(--accent);}
+.rank-input-box input::placeholder{color:var(--muted);font-weight:300;}
+.rank-input-box input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.rank-clear{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:1rem;padding:2px;
+  transition:color 0.15s;display:none;
+}
+.rank-clear:hover{color:var(--red);}
+.rank-label{color:var(--muted);font-size:0.85rem;}
+.rank-display{
+  font-family:'Syne',sans-serif;
+  font-size:1.6rem;font-weight:800;
+  color:var(--gold);
+  min-width:80px;text-align:center;
+}
+.rank-status{
+  font-size:0.78rem;margin-top:10px;
+  color:var(--muted);
+  min-height:18px;
+}
+.rank-status.entered{color:var(--green);}
+
+/* ── ACTION BUTTONS ── */
+.actions{
+  display:flex;gap:14px;flex-wrap:wrap;
+  margin-top:4px;
+}
+.btn{
+  flex:1;min-width:200px;
+  padding:15px 24px;
+  border:none;border-radius:14px;
+  font-family:'Syne',sans-serif;
+  font-size:0.95rem;font-weight:700;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+  letter-spacing:0.3px;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(rgba(255,255,255,0.08),transparent);
+  pointer-events:none;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+.btn:active{transform:scale(0.98);}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+  color:#fff;
+}
+.btn-secondary{
+  background:linear-gradient(135deg,#1e3a5f,#1e2d45);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn .btn-icon{font-size:1.1rem;margin-right:8px;}
+.btn .btn-sub{
+  display:block;font-size:0.68rem;font-weight:400;
+  opacity:0.7;margin-top:2px;letter-spacing:0px;
+  font-family:'Instrument Sans',sans-serif;
+}
+
+/* only show primary when rank entered */
+.btn-primary-rank{display:none;}
+.btn-primary-rank.visible{display:flex;align-items:center;justify-content:center;flex-direction:column;}
+
+/* ── SUMMARY BAR ── */
+.summary-bar{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 22px;
+  display:flex;align-items:center;flex-wrap:wrap;gap:16px;
+  font-size:0.82rem;
+}
+.summary-item{display:flex;align-items:center;gap:6px;}
+.summary-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.sd-blue{background:var(--accent);}
+.sd-purple{background:#a855f7;}
+.sd-gold{background:var(--gold);}
+.summary-label{color:var(--muted);}
+.summary-val{color:var(--text);font-weight:600;}
+.summary-sep{color:var(--border);font-size:1.2rem;}
+
+/* ── RESULTS ── */
+.results-section{
+  display:none;
+  animation:fadeUp 0.4s ease;
+}
+.results-section.visible{display:block;}
+.results-header{
+  background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.1));
+  border:1px solid rgba(59,130,246,0.2);
+  border-radius:20px 20px 0 0;
+  padding:22px 28px;
+}
+.results-header h2{
+  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
+}
+.results-header p{color:var(--muted);font-size:0.83rem;margin-top:4px;}
+.results-body{
+  background:var(--card);
+  border:1px solid var(--border);border-top:none;
+  border-radius:0 0 20px 20px;
+  overflow:hidden;
+}
+.college-row{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 28px;
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.college-row:last-child{border-bottom:none;}
+.college-row:hover{background:rgba(255,255,255,0.02);}
+.col-rank{
+  width:36px;height:36px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:800;
+  flex-shrink:0;
+}
+.rank-1{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;}
+.rank-2{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff;}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#92400e);color:#fff;}
+.rank-n{background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.col-info{flex:1;}
+.col-name{font-weight:600;font-size:0.9rem;color:var(--text);}
+.col-meta{font-size:0.75rem;color:var(--muted);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap;}
+.col-meta span{display:flex;align-items:center;gap:4px;}
+.col-cutoff{
+  text-align:right;
+  flex-shrink:0;
+}
+.cutoff-val{
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;
+  color:var(--accent);
+}
+.cutoff-label{font-size:0.68rem;color:var(--muted);margin-top:2px;}
+.col-tag{
+  background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.2);
+  color:var(--green);
+  font-size:0.68rem;font-weight:600;
+  padding:2px 8px;border-radius:6px;
+  white-space:nowrap;
+}
+.col-tag.miss{
+  background:rgba(239,68,68,0.1);
+  border-color:rgba(239,68,68,0.2);
+  color:var(--red);
+}
+.col-tag.close{
+  background:rgba(245,158,11,0.1);
+  border-color:rgba(245,158,11,0.2);
+  color:var(--gold);
+}
+
+.no-results{
+  padding:40px;text-align:center;
+  color:var(--muted);font-size:0.9rem;
+}
+
+/* ── RESET BTN ── */
+.reset-row{
+  display:flex;justify-content:center;margin-top:20px;
+}
+.btn-reset{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);border-radius:10px;
+  padding:8px 22px;font-family:'Instrument Sans',sans-serif;
+  font-size:0.82rem;cursor:pointer;
+  transition:all 0.15s;
+}
+.btn-reset:hover{border-color:var(--red);color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">TG EAPCET · College Finder</div>
+  <h1>Find Your College</h1>
+  <p>Select branch, caste & rank — we'll match colleges for you</p>
+</div>
+
+<div class="page">
+
+  <!-- ── SECTION 1: BRANCH ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">Branch Selection</div>
+        <div class="section-subtitle">Select one or more · order matters</div>
+      </div>
+      <span class="default-badge">Default: CSE</span>
+    </div>
+    <div class="section-body">
+      <div class="branch-grid" id="branchGrid">
+        <!-- injected by JS -->
+      </div>
+      <div class="branch-order-hint">Click branches in your preferred order (1st choice = priority 1)</div>
+      <div class="selected-branches" id="selectedPills"></div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: CASTE ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">Caste / Category</div>
+        <div class="section-subtitle">Select exactly one category</div>
+      </div>
+      <span class="default-badge">Default: OC Boys</span>
+    </div>
+    <div class="section-body">
+      <div class="caste-grid" id="casteGrid"></div>
+      <div class="caste-note">Only one category can be selected at a time</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: RANK ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">Enter Your Rank</div>
+        <div class="section-subtitle">EAPCET rank number</div>
+      </div>
+      <span class="optional-badge">Optional</span>
+    </div>
+    <div class="section-body">
+      <div class="rank-wrap">
+        <div class="rank-input-box">
+          <input type="number" id="rankInput" placeholder="e.g. 12500" min="1" max="200000"
+                 oninput="onRankInput()" onkeydown="return event.key!=='-'"/>
+          <button class="rank-clear" id="rankClear" onclick="clearRank()">✕</button>
+        </div>
+        <div>
+          <div class="rank-label">Your Rank</div>
+          <div class="rank-display" id="rankDisplay">—</div>
+        </div>
+      </div>
+      <div class="rank-status" id="rankStatus">Leave blank to see all colleges and cutoffs</div>
+    </div>
+  </div>
+
+  <!-- ── SUMMARY ── -->
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-item">
+      <div class="summary-dot sd-blue"></div>
+      <span class="summary-label">Branch:</span>
+      <span class="summary-val" id="sumBranch">CSE (default)</span>
+    </div>
+    <span class="summary-sep">·</span>
+    <div class="summary-item">
+      <div class="summary-dot sd-purple"></div>
+      <span class="summary-label">Category:</span>
+      <span class="summary-val" id="sumCaste">OC Boys (default)</span>
+    </div>
+    <span class="summary-sep">·</span>
+    <div class="summary-item">
+      <div class="summary-dot sd-gold"></div>
+      <span class="summary-label">Rank:</span>
+      <span class="summary-val" id="sumRank">Not entered</span>
+    </div>
+  </div>
+
+  <!-- ── ACTION BUTTONS ── -->
+  <div class="actions">
+    <!-- Always visible -->
+    <button class="btn btn-secondary" onclick="findColleges(false)">
+      <span class="btn-icon">🏛️</span>
+      See Colleges &amp; Cutoffs
+      <span class="btn-sub">Based on your branch &amp; category</span>
+    </button>
+
+    <!-- Only when rank is entered -->
+    <button class="btn btn-primary btn-primary-rank" id="btnRankSearch" onclick="findColleges(true)">
+      <span class="btn-icon">🎯</span>
+      Colleges Coming to Me
+      <span class="btn-sub">Colleges within your rank range</span>
+    </button>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2 id="resultsTitle">Results</h2>
+      <p id="resultsSubtitle"></p>
+    </div>
+    <div class="results-body" id="resultsBody"></div>
+  </div>
+
+  <div class="reset-row">
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Selections</button>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════
+const BRANCHES = [
+  {id:'CSE',   label:'CSE',            icon:'💻'},
+  {id:'CSE-AI',label:'CSE (AI & ML)',  icon:'🤖'},
+  {id:'CSE-DS',label:'CSE (Data Sci)', icon:'📊'},
+  {id:'CSE-CS',label:'Cyber Security', icon:'🔒'},
+  {id:'IT',    label:'IT',             icon:'🌐'},
+  {id:'ECE',   label:'ECE',            icon:'📡'},
+  {id:'EEE',   label:'EEE',            icon:'⚡'},
+  {id:'MECH',  label:'Mechanical',     icon:'⚙️'},
+  {id:'CIVIL', label:'Civil',          icon:'🏗️'},
+  {id:'CHEM',  label:'Chemical',       icon:'🧪'},
+];
+
+const CASTES = [
+  {id:'OC',    label:'OC Boys'},
+  {id:'OC-G',  label:'OC Girls'},
+  {id:'BC-A',  label:'BC-A'},
+  {id:'BC-B',  label:'BC-B'},
+  {id:'BC-C',  label:'BC-C'},
+  {id:'BC-D',  label:'BC-D'},
+  {id:'SC',    label:'SC'},
+  {id:'ST',    label:'ST'},
+  {id:'EWS',   label:'EWS'},
+];
+
+// Sample college data — replace with your Python API data
+const COLLEGES = [
+  {name:'JNTU Hyderabad',         city:'Hyderabad',  type:'Government', branches:{CSE:1200,'CSE-AI':2100,'IT':3400,ECE:4200,EEE:6700,MECH:9800}},
+  {name:'Osmania University',     city:'Hyderabad',  type:'Government', branches:{CSE:2800,'CSE-AI':4200,IT:5100,ECE:6300,EEE:9200,MECH:12000}},
+  {name:'MGIT',                   city:'Hyderabad',  type:'Private',    branches:{CSE:3800,'CSE-AI':5200,'CSE-DS':6100,'CSE-CS':6800,IT:7200,ECE:8900}},
+  {name:'CBIT',                   city:'Hyderabad',  type:'Private',    branches:{CSE:4200,'CSE-AI':6100,IT:7400,ECE:9100,EEE:12000,MECH:15000}},
+  {name:'VBIT',                   city:'Hyderabad',  type:'Private',    branches:{CSE:5100,'CSE-AI':7200,'CSE-DS':8000,IT:9300,ECE:11000}},
+  {name:'VNR VJIET',              city:'Hyderabad',  type:'Private',    branches:{CSE:5600,'CSE-AI':7800,'CSE-CS':8200,IT:9700,ECE:12000}},
+  {name:'Maturi Venkata Subba Rao',city:'Hyderabad', type:'Private',    branches:{CSE:6400,'CSE-DS':8100,IT:10200,ECE:13000}},
+  {name:'GRIET',                  city:'Hyderabad',  type:'Private',    branches:{CSE:7200,'CSE-AI':9400,IT:11000,ECE:14200,EEE:17000}},
+  {name:'BVRIT',                  city:'Narsapur',   type:'Private',    branches:{CSE:8100,IT:10800,ECE:15000}},
+  {name:'ACE Engineering College',city:'Hyderabad',  type:'Private',    branches:{CSE:9500,'CSE-AI':12000,IT:13500,ECE:17000}},
+  {name:'Malla Reddy Engg.',      city:'Hyderabad',  type:'Private',    branches:{CSE:11000,IT:14000,ECE:18000,MECH:22000}},
+  {name:'KL University',          city:'Vijayawada', type:'Deemed',     branches:{CSE:2100,'CSE-AI':3200,'CSE-DS':3800,'CSE-CS':4100,IT:5200,ECE:6800}},
+  {name:'VIT-TG',                 city:'Amaravati',  type:'Deemed',     branches:{CSE:2900,'CSE-AI':4100,'CSE-DS':4700,IT:6100,ECE:8200}},
+  {name:'SRM-TG',                 city:'Amaravati',  type:'Deemed',     branches:{CSE:3500,'CSE-AI':4900,IT:6800,ECE:9500}},
+  {name:'GITAM Vizag',            city:'Vizag',      type:'Deemed',     branches:{CSE:4800,'CSE-AI':6500,IT:8200,ECE:10800}},
+  {name:'Andhra University',      city:'Vizag',      type:'Government', branches:{CSE:3100,'CSE-AI':5200,ECE:7800,MECH:14000,CIVIL:18000}},
+  {name:'RGUKT Basar',            city:'Basar',      type:'Government', branches:{CSE:900,'CSE-AI':1500,ECE:3200,EEE:5100}},
+  {name:'RGUKT Ongole',           city:'Ongole',     type:'Government', branches:{CSE:1100,'CSE-AI':1900,ECE:3700,EEE:5800}},
+  {name:'Sri Venkateswara Univ',  city:'Tirupati',   type:'Government', branches:{CSE:3800,ECE:7200,MECH:13000,CIVIL:16000,EEE:11000}},
+  {name:'NIT Warangal',           city:'Warangal',   type:'NIT',        branches:{CSE:500,'CSE-AI':800,ECE:1200,EEE:2100,MECH:2800,CIVIL:4100}},
+];
+
+// Multipliers per caste (relative to OC Boys base)
+const CASTE_MULTIPLIER = {
+  'OC':1.0,'OC-G':1.08,'BC-A':1.4,'BC-B':1.35,'BC-C':1.5,
+  'BC-D':1.3,'SC':2.2,'ST':2.8,'EWS':1.15
+};
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let selectedBranches = []; // ordered
+let selectedCaste    = 'OC'; // default OC Boys
+let enteredRank      = null;
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+function init(){
+  // Render branch buttons
+  const bg = document.getElementById('branchGrid');
+  bg.innerHTML = BRANCHES.map(b=>`
+    <button class="branch-btn" id="bb-${b.id}" onclick="toggleBranch('${b.id}')">
+      <span class="branch-icon">${b.icon}</span>${b.label}
+    </button>
+  `).join('');
+
+  // Render caste buttons
+  const cg = document.getElementById('casteGrid');
+  cg.innerHTML = CASTES.map(c=>`
+    <button class="caste-btn ${c.id===selectedCaste?'selected':''}" 
+            id="cb-${c.id}" onclick="selectCaste('${c.id}','${c.label}')">
+      ${c.label}
+    </button>
+  `).join('');
+
+  updateSummary();
+}
+
+// ═══════════════════════════════════════════════
+//  BRANCH LOGIC
+// ═══════════════════════════════════════════════
+function toggleBranch(id){
+  const idx = selectedBranches.indexOf(id);
+  if(idx===-1){
+    selectedBranches.push(id);
+  } else {
+    selectedBranches.splice(idx,1);
+  }
+  renderBranchUI();
+  updateSummary();
+}
+
+function renderBranchUI(){
+  BRANCHES.forEach(b=>{
+    const btn = document.getElementById('bb-'+b.id);
+    const idx = selectedBranches.indexOf(b.id);
+    if(idx!==-1){
+      btn.classList.add('selected');
+      btn.innerHTML = `
+        <span class="rank-dot">${idx+1}</span>
+        <span class="branch-icon">${b.icon}</span>${b.label}
+      `;
+    } else {
+      btn.classList.remove('selected');
+      btn.innerHTML = `<span class="branch-icon">${b.icon}</span>${b.label}`;
+    }
+  });
+
+  // Pills
+  const pillsDiv = document.getElementById('selectedPills');
+  if(selectedBranches.length===0){
+    pillsDiv.innerHTML='';
+    return;
+  }
+  pillsDiv.innerHTML = selectedBranches.map((id,i)=>{
+    const b = BRANCHES.find(x=>x.id===id);
+    return `
+      <div class="sel-pill">
+        <span class="pill-num">${i+1}</span>
+        ${b.icon} ${b.label}
+        <span class="pill-x" onclick="toggleBranch('${id}')">✕</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  CASTE LOGIC
+// ═══════════════════════════════════════════════
+function selectCaste(id, label){
+  selectedCaste = id;
+  document.querySelectorAll('.caste-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('cb-'+id).classList.add('selected');
+  updateSummary();
+}
+
+// ═══════════════════════════════════════════════
+//  RANK LOGIC
+// ═══════════════════════════════════════════════
+function onRankInput(){
+  const val = parseInt(document.getElementById('rankInput').value);
+  const clearBtn = document.getElementById('rankClear');
+  const display  = document.getElementById('rankDisplay');
+  const status   = document.getElementById('rankStatus');
+  const rankBtn  = document.getElementById('btnRankSearch');
+
+  if(!isNaN(val) && val>0){
+    enteredRank = val;
+    display.textContent = val.toLocaleString('en-IN');
+    clearBtn.style.display='block';
+    status.textContent='✓ Rank entered — "Colleges Coming to Me" button is now active';
+    status.className='rank-status entered';
+    rankBtn.classList.add('visible');
+  } else {
+    enteredRank=null;
+    display.textContent='—';
+    clearBtn.style.display='none';
+    status.textContent='Leave blank to see all colleges and cutoffs';
+    status.className='rank-status';
+    rankBtn.classList.remove('visible');
+  }
+  updateSummary();
+}
+
+function clearRank(){
+  document.getElementById('rankInput').value='';
+  onRankInput();
+}
+
+// ═══════════════════════════════════════════════
+//  SUMMARY BAR
+// ═══════════════════════════════════════════════
+function updateSummary(){
+  const effBranches = selectedBranches.length>0
+    ? selectedBranches.map(id=>BRANCHES.find(b=>b.id===id).label).join(', ')
+    : 'CSE (default)';
+  const casteObj  = CASTES.find(c=>c.id===selectedCaste);
+  const casteName = casteObj ? casteObj.label+' (default)' : 'OC Boys';
+
+  document.getElementById('sumBranch').textContent = effBranches;
+  document.getElementById('sumCaste').textContent  = casteObj
+    ? casteObj.label + (selectedCaste==='OC'?' (default)':'')
+    : 'OC Boys (default)';
+  document.getElementById('sumRank').textContent   = enteredRank
+    ? '#'+enteredRank.toLocaleString('en-IN')
+    : 'Not entered';
+}
+
+// ═══════════════════════════════════════════════
+//  FIND COLLEGES
+// ═══════════════════════════════════════════════
+function findColleges(rankMode){
+  const branchList = selectedBranches.length>0 ? selectedBranches : ['CSE'];
+  const caste      = selectedCaste || 'OC';
+  const mult       = CASTE_MULTIPLIER[caste] || 1.0;
+  const rank       = enteredRank;
+
+  // Gather rows: for each college, find the best matching branch (first in priority order)
+  let rows = [];
+  COLLEGES.forEach(col=>{
+    // find first branch in user's priority that this college has
+    let matchedBranch = null, baseCutoff = null;
+    for(let br of branchList){
+      if(col.branches[br]!==undefined){
+        matchedBranch=br; baseCutoff=col.branches[br]; break;
+      }
+    }
+    if(!matchedBranch) return; // college doesn't have any selected branch
+
+    const adjustedCutoff = Math.round(baseCutoff * mult);
+
+    if(rankMode && rank){
+      // only include if rank <= cutoff (with 10% buffer to show near-misses)
+      if(rank > adjustedCutoff * 1.1) return;
+    }
+
+    rows.push({
+      name:         col.name,
+      city:         col.city,
+      type:         col.type,
+      branch:       matchedBranch,
+      branchLabel:  BRANCHES.find(b=>b.id===matchedBranch)?.label || matchedBranch,
+      cutoff:       adjustedCutoff,
+      baseCutoff:   baseCutoff,
+      canGet:       rank ? rank<=adjustedCutoff : null,
+      close:        rank ? (rank>adjustedCutoff && rank<=adjustedCutoff*1.1) : null,
+    });
+  });
+
+  // Sort: if rank mode, safe first then close; else by cutoff asc
+  if(rankMode && rank){
+    rows.sort((a,b)=>a.cutoff-b.cutoff);
+  } else {
+    rows.sort((a,b)=>a.cutoff-b.cutoff);
+  }
+
+  renderResults(rows, rankMode, branchList, caste);
+}
+
+function renderResults(rows, rankMode, branchList, caste){
+  const section = document.getElementById('resultsSection');
+  const title   = document.getElementById('resultsTitle');
+  const sub     = document.getElementById('resultsSubtitle');
+  const body    = document.getElementById('resultsBody');
+
+  const casteLabel = CASTES.find(c=>c.id===caste)?.label || caste;
+  const branchLabels = branchList.map(id=>BRANCHES.find(b=>b.id===id)?.label||id).join(', ');
+
+  if(rankMode){
+    title.textContent = '🎯 Colleges Coming to You';
+    sub.textContent   = `Rank #${enteredRank.toLocaleString('en-IN')} · ${casteLabel} · ${branchLabels}`;
+  } else {
+    title.textContent = '🏛️ Colleges & Cutoffs';
+    sub.textContent   = `${casteLabel} category · ${branchLabels}`;
+  }
+
+  if(rows.length===0){
+    body.innerHTML=`<div class="no-results">No colleges found for your selection. Try different branches or check your rank.</div>`;
+  } else {
+    body.innerHTML = rows.map((r,i)=>{
+      const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+      let tag='';
+      if(rankMode && enteredRank){
+        if(r.canGet)    tag=`<span class="col-tag">✓ You qualify</span>`;
+        else if(r.close)tag=`<span class="col-tag close">⚡ Close miss</span>`;
+        else            tag=`<span class="col-tag miss">✗ Out of range</span>`;
+      }
+      return `
+        <div class="college-row">
+          <div class="col-rank ${rankClass}">${i+1}</div>
+          <div class="col-info">
+            <div class="col-name">${r.name}</div>
+            <div class="col-meta">
+              <span>📍 ${r.city}</span>
+              <span>🏷️ ${r.type}</span>
+              <span>📚 ${r.branchLabel}</span>
+            </div>
+          </div>
+          ${tag}
+          <div class="col-cutoff">
+            <div class="cutoff-val">${r.cutoff.toLocaleString('en-IN')}</div>
+            <div class="cutoff-label">Last Rank</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  section.classList.add('visible');
+  section.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════
+function resetAll(){
+  selectedBranches=[];
+  selectedCaste='OC';
+  enteredRank=null;
+  document.getElementById('rankInput').value='';
+  document.getElementById('resultsSection').classList.remove('visible');
+  document.getElementById('btnRankSearch').classList.remove('visible');
+  document.querySelectorAll('.caste-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('cb-OC').classList.add('selected');
+  onRankInput();
+  renderBranchUI();
+  updateSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+init();
+</script>
+</body>
+</html>
